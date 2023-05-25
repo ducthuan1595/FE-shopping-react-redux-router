@@ -19,6 +19,7 @@ export default function HomePage() {
 
   const handleShopPage = () => {
     navigate("/shop");
+    window.scrollTo(0,0);
   };
 
   const handleDetailProduct = (product) => {
@@ -75,12 +76,12 @@ export default function HomePage() {
           <h4>TOP TRENDING PRODUCTS</h4>
         </div>
         <div className={styled.items}>
-          {products[0] && products[0].map(p => {
+          {products && products?.products?.map(p => {
             // format a price with dot
             let price = p.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
             return (
-              <div className={styled.item} key={p._id.$oid} onClick={handleDetailProduct.bind(null, p)}>
-                <img src={p.img1} alt={p.name} />
+              <div className={styled.item} key={p._id} onClick={handleDetailProduct.bind(null, p)}>
+                <img src={p.images[0]} alt={p.name} />
                 <h5>{p.name}</h5>
                 <p>{price} VND</p>
               </div>

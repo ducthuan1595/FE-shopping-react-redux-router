@@ -1,25 +1,29 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 
-import { login } from "../../store/userSlice";
+import { logout } from "../../store/userSlice";
 import styled from './NavBar.module.css';
 import { NavLink } from "react-router-dom";
+import Cookies from "universal-cookie";
+
+import { request } from "../../services/service";
+
 
 const NavBar = () => {
   const onLogin = useSelector(state => state.auth.onLogin);
   const dispatch = useDispatch();
+  const cookies = new Cookies();
 
-  const userCurr = JSON.parse(localStorage.getItem('userCrr'))
-  let fullName;
-  if(userCurr !== null) {
-    fullName = userCurr[0].fullName;
-  }
-
+  const userCurr = useSelector(state => state.auth.currUser);
+  
   // remote user curr
-  const handleLogout = () => {
-    dispatch(login());
-    localStorage.removeItem('userCrr')
-  }
+  const handleLogout = async() => {
+    const data = await request.logout();
+    if(data.data.message === 'ok') {
+      dispatch(logout());
+      cookies.set('currUser');
+    }
+  };
 
   return (
     <nav className={styled.navbar}>
@@ -43,16 +47,17 @@ const NavBar = () => {
             <i className="fas fa-shopping-cart"></i>
               Cart</NavLink>
           </li>
-          
+          {onLogin ? <li style={{fontSize: '22px', textAlign: 'center'}}><i className="fas fa-user"></i>{userCurr?.name}</li> :
           <li>
             <NavLink className={(navData) =>
               navData.isActive ? styled.active : ''
             } to='/login' >
             <i className="fas fa-user"></i>
-              {onLogin ? fullName : 'Login'}
+              Login
             </NavLink>
           </li>
-          {onLogin && <li onClick={handleLogout} style={{fontSize: '20px', cursor: 'pointer'}}>(Logout)</li>}
+          }
+          {onLogin && <li onClick={handleLogout} style={{fontSize: '22px', cursor: 'pointer'}}>(Logout)</li>}
         </ul>
       </div>
     </nav>

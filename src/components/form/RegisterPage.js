@@ -1,25 +1,23 @@
+//////////////////////////////
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
 
-import { login } from "../../store/userSlice";
-import styled from "./LoginPage.module.css";
+import styled from "./RegisterPage.module.css";
 import { Link } from "react-router-dom";
 
-export default function LoginPage() {
+import { request } from "../../services/service";
+
+export default function RegisterPage() {
   const [isValid, setInvalid] = useState(true);
   const [messageError, setMessageError] = useState('');
   const [valueInput, setValueInput] = useState({
+    name: '',
     email: '',
     password: '',
+    phone: ''
   });
 
-  const dispatch = useDispatch();
-  const onLogin = useSelector(state => state.auth.onLogin);
   const navigate = useNavigate();
-
-  let userArr = JSON.parse(localStorage.getItem('userArr')) ?? [];
-  // let userCurr = JSON.parse
 
   // target form input
   const handleChangeInput = (e, name) => {
@@ -29,7 +27,6 @@ export default function LoginPage() {
     setValueInput(stateCopy);
   };
 
-  // valid input form
   const handleBlur = (name) => {
     if(valueInput[name].trim().length === 0) {
       setInvalid(true);
@@ -45,33 +42,14 @@ export default function LoginPage() {
     }
   }
 
-  // handle login
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
 
+    // valid value input
     if(!isValid) {
-      // check value user
-      if(userArr && userArr.length > 0) {
-        const filterUser = userArr.filter(user => user.email === valueInput.email && user.password === valueInput.password);
-        if(filterUser.length > 0) {
-          dispatch(login());
-          //save current user local storage
-          localStorage.setItem('userCrr', JSON.stringify(filterUser));
-          setInvalid(false);
-          alert('Login successfully🎉🎉🎉');
-          // window.location.reload();
-          // navigate('/');
-        }else {
-          setInvalid(true);
-          setMessageError('Information incorrect!')
-          setInvalid({
-            email: '',
-            password: ''
-          });
-        }
-      }else {
-          setInvalid(true);
-          setMessageError('Information incorrect!')
+      const data = await request.signup(valueInput);
+      if(data.data.message === 'ok') {
+        navigate('/login')
       }
     }
   }
@@ -81,9 +59,16 @@ export default function LoginPage() {
     <div className={styled.form}>
       <form onSubmit={handleSubmit}>
         <div className={styled["form-group"]}>
-          <h2>Sign In</h2>
+          <h2>Sign Up</h2>
           <div className="form-group">
-
+            <input
+              type="text"
+              name="fullName"
+              placeholder="Full Name"
+              value={valueInput.name}
+              onChange={(e) => handleChangeInput(e, "name")}
+              onBlur={handleBlur.bind(null, 'name')}
+            />
             <input
               type="email"
               name="email"
@@ -96,16 +81,25 @@ export default function LoginPage() {
             <input
               type="password"
               name="password"
+              // className="form-control"
               placeholder="Password"
               value={valueInput.password}
               onChange={(e) => handleChangeInput(e, "password")}
               onBlur={handleBlur.bind(null, 'password')}
             />
-            
+            <input
+              type="text"
+              // className="form-control"
+              name="phone"
+              placeholder="Phone"
+              value={valueInput.phone}
+              onChange={(e) => handleChangeInput(e, "phone")}
+              onBlur={handleBlur.bind(null, 'phone')}
+            />
           </div>
           {isValid && <div style={{color: 'red'}}>{messageError}</div>}
-          <button disabled={onLogin}>SIGN IN</button>
-          <div className={styled.link}>Create a account?<Link to='/register' >Sign up</Link></div>
+          <button>SIGN UP</button>
+          <div className={styled.link}>Login?<Link to='/login' >Click</Link></div>
         </div>
       </form>
       </div>

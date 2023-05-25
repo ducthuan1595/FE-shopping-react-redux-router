@@ -5,36 +5,39 @@ import { useDispatch } from "react-redux";
 import { getAllProduct } from "./store/producterSlice";
 import NavBar from "./components/Layout/NavBar";
 import Footer from "./components/Layout/Footer";
-import Chatbot from "./components/Layout/Chatbot";
+import Chatbot from "./components/support/Chatbot";
 
 import HomePage from "./components/pages/Home";
 import DetailPage from "./components/pages/DetailPage";
 import CartPage from "./components/pages/CartPage";
 import CheckoutPage from "./components/pages/CheckoutPage";
-import LoginPage from "./components/pages/LoginPage";
-import RegisterPage from "./components/pages/RegisterPage";
+import LoginPage from './components/form/LoginPage';
+import RegisterPage from "./components/form/RegisterPage";
 import ShopPage from "./components/pages/ShopPage";
 
 import "./App.css";
+import { request } from "./services/service";
+
+// https://app-website-sales.vercel.app/
 
 function App() {
   const dispatch = useDispatch();
 
   // fetch Api products
   useEffect(() => {
-    const fetchApi = async () => {
-      const res = await fetch(
-        "https://firebasestorage.googleapis.com/v0/b/funix-subtitle.appspot.com/o/Boutique_products.json?alt=media&token=dc67a5ea-e3e0-479e-9eaf-5e01bcd09c74"
-      );
-      if(!res.ok) {
-        throw new Error('Something went wrong!')
-      }
-      const data = await res.json();
-      if (data) {
-        dispatch(getAllProduct(data));
+    const fetchAllProduct = async () => {
+      try{
+        const res = await request.getProducts();
+        if(res.data.message !== 'ok') {
+          throw new Error('Something went wrong!')
+        }
+        console.log(res.data);
+        dispatch(getAllProduct(res.data.products));
+      }catch(err) {
+        console.error(err);
       }
     };
-    fetchApi();
+    fetchAllProduct();
   }, []);
 
   return (

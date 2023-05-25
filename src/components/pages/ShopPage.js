@@ -8,14 +8,13 @@ import styled from './ShopPage.module.css';
 
 export default function ShopPage() {
   const products = useSelector((state) => state.products.products);
-
   let filterProducts;
   // use dynamic url filter products follow category
   const params = useParams();
   if(params.item === 'all' || params.item === undefined) {
-    filterProducts = products[0];
+    filterProducts = products.products;
   }else {
-    filterProducts = products[0].filter(item=> item.category === params.item)
+    filterProducts = products?.products?.filter(item=> item.category === params.item)
   }
   
   return (

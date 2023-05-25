@@ -5,14 +5,15 @@ import { useSelector, useDispatch } from "react-redux";
 import RelatedProducts from "./components/RelatedProducts";
 import styled from "./DetailPage.module.css";
 import { addCart } from '../../store/cartSlice';
+import { request } from '../../services/service';
 
 export default function DetailPage() {
-  const [quality, setQuality] = useState(1)
+  const [quantity, setQuantity] = useState(1)
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const detailProduct = useSelector((state) => state.products.detailProduct);
-  let userCurr = JSON.parse(localStorage.getItem('userCrr')) ?? {};
+  let userCurr = useSelector((state) => state.auth.currUser)
   let price = detailProduct.price
     .toString()
     .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -26,26 +27,23 @@ export default function DetailPage() {
   const text = filter.splice(0, 1)
 
   // handle add products to cart
-  const handleAddCart = () => {
-    if(quality > 0 && userCurr[0]) {
-      const itemCart = {
-        ...detailProduct,
-        amount: quality,
-        owner: userCurr[0]
+  const handleAddCart = async() => {
+    if(quantity > 0 && userCurr) {
+      const res = await request.addCart(userCurr.userId, detailProduct._id, quantity)
+      if(res.data.message === 'ok') {
+        navigate('/cart');
+        window.scrollTo(0,0);
       }
-      dispatch(addCart(itemCart));;
-    }else {
-      navigate('/login')
     }
   }
 
   const handleIncrease = () => {
-    setQuality(quality + 1)
+    setQuantity(quantity + 1)
   }
 
   const handleDecrease = () => {
-    if(quality > 1) {
-      setQuality(quality - 1)
+    if(quantity > 1) {
+      setQuantity(quantity - 1)
     }
   }
 
@@ -54,7 +52,7 @@ export default function DetailPage() {
 
       <div className={styled.detail}>
         
-        <img src={detailProduct.img1} alt={detailProduct.name} />
+        <img src={detailProduct.images[0]} alt={detailProduct.name} />
         <div className={styled.content}>
           <h3>{detailProduct.name}</h3>
           <span>{price} VND</span>
@@ -64,11 +62,11 @@ export default function DetailPage() {
             <span>{detailProduct.category}</span>
           </div>
           <div className={styled.actions}>
-            <p>QUALITY</p>
+            <p>QUANTITY</p>
             <div className={styled.action}>
               <div className={styled.group}>
                 <i className="fas fa-caret-left" onClick={handleDecrease}></i>
-                <span>{quality}</span>
+                <span>{quantity}</span>
                 <i className="fas fa-caret-right" onClick={handleIncrease}></i>
               </div>
               <button onClick={handleAddCart}>Add to cart</button>
@@ -92,7 +90,7 @@ export default function DetailPage() {
       </div>
 
       {/* related products */}
-      <RelatedProducts category={detailProduct.category} productId={detailProduct._id.$oid}/>
+      <RelatedProducts category={detailProduct.category} productId={detailProduct._id}/>
     </div>
   );
 }

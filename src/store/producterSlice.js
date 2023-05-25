@@ -19,7 +19,7 @@ const popupSlice = createSlice({
       state.product = action.payload;
     },
     getAllProduct: (state, action) => {
-      state.products.push(action.payload);
+      state.products = action.payload;
     },
     detailProduct: (state, action) => {
       state.detailProduct = action.payload;

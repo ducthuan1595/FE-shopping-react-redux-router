@@ -10,7 +10,7 @@ const ProductList = ({ products }) => {
 
   const handleDetailProduct = (product) => {
     dispatch(detailProduct(product));
-    navigate(`/detail/${product._id.$oid}`);
+    navigate(`/detail/${product._id}`);
     window.scrollTo(0, 0);
   }
 
@@ -38,10 +38,10 @@ const ProductList = ({ products }) => {
             return (
               <div
                 className={styled.item}
-                key={p._id.$oid}
+                key={p._id}
                 onClick={handleDetailProduct.bind(null, p)}
               >
-                <img src={p.img1} alt={p.name} />
+                <img src={p.images[0]} alt={p.name} />
                 <h5>{p.name}</h5>
                 <p>{price} VND</p>
               </div>

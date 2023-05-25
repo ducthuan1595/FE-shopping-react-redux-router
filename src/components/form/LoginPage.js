@@ -1,22 +1,25 @@
-//////////////////////////////
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import Cookies from 'universal-cookie';
 
-import styled from "./RegisterPage.module.css";
+import { request } from "../../services/service";
+import { login } from "../../store/userSlice";
+import styled from "./LoginPage.module.css";
 import { Link } from "react-router-dom";
 
-export default function RegisterPage() {
+export default function LoginPage() {
   const [isValid, setInvalid] = useState(true);
   const [messageError, setMessageError] = useState('');
   const [valueInput, setValueInput] = useState({
-    fullName: '',
     email: '',
     password: '',
-    phone: ''
   });
 
+  const dispatch = useDispatch();
+  const onLogin = useSelector(state => state.auth.onLogin);
   const navigate = useNavigate();
-  let useArr = JSON.parse(localStorage.getItem('userArr')) ?? [];
+  const cookies = new Cookies();
 
   // target form input
   const handleChangeInput = (e, name) => {
@@ -26,33 +29,37 @@ export default function RegisterPage() {
     setValueInput(stateCopy);
   };
 
+  // valid input form
   const handleBlur = (name) => {
     if(valueInput[name].trim().length === 0) {
       setInvalid(true);
       setMessageError('Please, this field is require!')
     }
-    if(name === 'password' && valueInput['password'].trim().length < 7) {
-      setInvalid(true);
-      setMessageError('Please, password must at least 8 charts!')
-    }
+    // if(name === 'password' && valueInput['password'].trim().length < 7) {
+    //   setInvalid(true);
+    //   setMessageError('Please, password must at least 8 charts!')
+    // }
     if(name === 'email' && !valueInput['email'].includes('@')) {
       setInvalid(true);
       setMessageError('Please, this field must to be email!')
     }
   }
 
-  const handleSubmit = (e) => {
+  // handle login
+  const handleSubmit = async(e) => {
     e.preventDefault();
 
-    // valid value input
     if(!isValid) {
-      // save localStorage
-      useArr.push(valueInput);
-      localStorage.setItem('userArr', JSON.stringify(useArr));
-      navigate('/login')
+      const data = await request.login(valueInput);
+      if(data.data.message === 'ok') {
+        dispatch(login(data.data.user));
+        cookies.set('currUser', data.data.user);
+        navigate('/');
+      }else {
+        setInvalid(true);
+        setMessageError('Information incorrect!')
+      }
     }
-    console.log(valueInput)
-
   }
 
 
@@ -60,16 +67,9 @@ export default function RegisterPage() {
     <div className={styled.form}>
       <form onSubmit={handleSubmit}>
         <div className={styled["form-group"]}>
-          <h2>Sign Up</h2>
+          <h2>Sign In</h2>
           <div className="form-group">
-            <input
-              type="text"
-              name="fullName"
-              placeholder="Full Name"
-              value={valueInput.fullName}
-              onChange={(e) => handleChangeInput(e, "fullName")}
-              onBlur={handleBlur.bind(null, 'fullName')}
-            />
+
             <input
               type="email"
               name="email"
@@ -82,25 +82,16 @@ export default function RegisterPage() {
             <input
               type="password"
               name="password"
-              // className="form-control"
               placeholder="Password"
               value={valueInput.password}
               onChange={(e) => handleChangeInput(e, "password")}
               onBlur={handleBlur.bind(null, 'password')}
             />
-            <input
-              type="text"
-              // className="form-control"
-              name="phone"
-              placeholder="Phone"
-              value={valueInput.phone}
-              onChange={(e) => handleChangeInput(e, "phone")}
-              onBlur={handleBlur.bind(null, 'phone')}
-            />
+            
           </div>
           {isValid && <div style={{color: 'red'}}>{messageError}</div>}
-          <button>SIGN UP</button>
-          <div className={styled.link}>Login?<Link to='/login' >Click</Link></div>
+          <button disabled={onLogin}>SIGN IN</button>
+          <div className={styled.link}>Create a account?<Link to='/register' >Sign up</Link></div>
         </div>
       </form>
       </div>

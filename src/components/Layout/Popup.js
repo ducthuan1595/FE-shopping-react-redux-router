@@ -24,7 +24,7 @@ const Popup = () => {
   const handleDetail = () => {
     dispatch(closePopup());
     dispatch(detailProduct(product));
-    navigate(`/detail/${product._id.$oid}`);
+    navigate(`/detail/${product._id}`);
     window.scrollTo(0, 0);
 
   }
@@ -34,7 +34,7 @@ const Popup = () => {
     <Modal />
     <div className={styled.popup}>
       <span className={styled.close} onClick={handleClose}><i className="far fa-times"></i></span>
-      <img src={product.img1}  alt={product.name} />
+      <img src={product.images[0]}  alt={product.name} />
       <div className={styled.content}>
         <h4>{product.name}</h4>
         <span>{price} VND</span>
