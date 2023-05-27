@@ -52,8 +52,8 @@ export default function LoginPage() {
     if(!isValid) {
       const data = await request.login(valueInput);
       if(data.data.message === 'ok') {
-        dispatch(login(data.data.user));
-        cookies.set('currUser', data.data.user);
+        dispatch(login(data.data));
+        cookies.set('currUser', data.data);
         navigate('/');
       }else {
         setInvalid(true);

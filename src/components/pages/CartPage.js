@@ -9,7 +9,7 @@ export default function CartPage() {
   return (
     <div className={styled.cart}>
       <section className={styled["cart-name"]}>
-        <h2 style={{fontSize: '50px'}}>{currUser.name}</h2>
+        <h2 style={{fontSize: '50px'}}>{currUser?.user?.name}</h2>
         <h4>cart</h4>
       </section>
       <h3>SHOPPING CART</h3>

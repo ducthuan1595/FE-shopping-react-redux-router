@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
-import { updateCart, deleteCart } from "../../../store/cartSlice";
+import { getCarts } from "../../../store/cartSlice";
 import styled from "./ListCart.module.css";
 import { useEffect, useState } from "react";
 
@@ -13,33 +13,40 @@ const ListCart = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [listCart, setListCart] = useState();
+  const [listCart, setListCart] = useState([]);
+  const [message, setMessage] = useState('Not product!');
 
   const fetchCarts = async() => {
-    const data = await request.getCarts(currUser.userId);
+    const data = await request.getCarts(currUser.user.userId);
     if(data.data.message === 'ok') {
       setListCart(data.data.cart);
+      dispatch(getCarts(data.data.cart));
     }
   }
   useEffect(() => {
     fetchCarts();
   }, [currUser]);
 
+  console.log(currUser.user.userId);
   const addCarts = async(productId, quantity) => {
-    const res = await request.addCart(currUser.userId, productId, quantity);
+    const res = await request.addCart(currUser.user.userId, productId, quantity);
     if(res.data.message === 'ok') {
       fetchCarts();
     }
   }
-
+  console.log(listCart);
   const handleNavigateShop = () => {
     navigate("/shop");
     window.scrollTo(0, 0);
   };
 
   const handleNavigateCheck = () => {
-    navigate("/checkout");
-    window.scrollTo(0, 0);
+    if(listCart.length > 0) {
+      navigate("/checkout");
+      window.scrollTo(0, 0);
+    }else {
+      setMessage('Please, choose buy item before checkout')
+    }
   };
 
   // update item cart
@@ -56,7 +63,7 @@ const ListCart = () => {
 
   // handle remove product
   const handleRemove = async(item) => {
-    const res = await request.deleteCart(currUser.userId, item._id);
+    const res = await request.deleteCart(currUser.user.userId, item._id);
     if(res.data.message === 'ok') {
       fetchCarts();
     }
@@ -76,7 +83,7 @@ const ListCart = () => {
           </tr>
         </thead>
         <tbody>
-          {listCart &&
+          {listCart.length > 0 ?
             listCart.map((p) => {
               const item = p?.productId;
               let price = item?.price
@@ -115,7 +122,8 @@ const ListCart = () => {
                   </td>
                 </tr>
               );
-            })}
+            })
+          : <tr><td style={{textAlign: 'left', fontSize: '20px', color: '#dad746'}} colSpan={6}>{message}</td></tr>}
         </tbody>
       </table>
 

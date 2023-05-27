@@ -1,83 +1,33 @@
 import { useSelector } from "react-redux";
 import styled from "./Checkout.module.css";
+import { Link } from "react-router-dom";
+
+import FormCheckout from "../form/Checkout";
 
 export default function CheckoutPage() {
   const items = useSelector(state => state.cart.listCart);
   const totalAmount = useSelector(state => state.cart.totalAmount);
-
   let total = totalAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-  }
 
   return (
     <div className={styled.checkout}>
       <section className={styled["checkout-name"]}>
         <h2>CHECKOUT</h2>
-        <h4>HOME / CART / CHECKOUT</h4>
+        <h4><Link to='/'>HOME</Link> / <Link to='/shop'>CART</Link> / <Link>CHECKOUT</Link></h4>
       </section>
       <h3>BILLING DETAILS</h3>
       <section className={styled['form-checkout']}>
         <div className={styled.layout}>
-          <form className='row' onSubmit={handleSubmit}>
-            <div className="col-12">
-              <label htmlFor='name' className="form-label">
-                FULL NAME
-              </label>
-              <input
-                type="text"
-                class="form-control"
-                id="name"
-                placeholder="Enter Your Name Here!"
-              />
-            </div>
-            <div className="col-12">
-              <label htmlFor='email' className="form-label">
-                EMAIL
-              </label>
-              <input
-                type="email"
-                class="form-control"
-                id="name"
-                placeholder="Enter Your Email Here!"
-              />
-            </div>
-            <div className="col-12">
-              <label htmlFor="phone-number" className="form-label">
-                PHONE NUMBER
-              </label>
-              <input
-                type="text"
-                class="form-control"
-                id="phone-number"
-                placeholder="Enter Your Phone Number Here!"
-              />
-            </div>
-            <div className="col-12">
-              <label htmlFor="address" class="form-label">
-                ADDRESS
-              </label>
-              <input
-                type="text"
-                class="form-control"
-                id="address"
-                placeholder="Enter Your Address Here!"
-              />
-            </div>
-            <div>
-              <button>Place order</button>
-            </div>
-          </form>
-
+          <FormCheckout total={total} />
           <div className={styled.order}>
             <h4>YOUR ORDER</h4>
-            {items && items.map(item => {
+            {items && items.map(p => {
+              const item = p.productId;
               let price = item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
               return (
-                <div className={styled.group} key={item._id.$oid}>
+                <div className={styled.group} key={p._id}>
                   <div>{item.name}</div>
-                  <span>{price} VND x {item.amount}</span>
+                  <span>{price} VND x {p.quantity}</span>
                 </div>
               )
             })}

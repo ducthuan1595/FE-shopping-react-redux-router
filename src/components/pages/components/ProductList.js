@@ -12,7 +12,8 @@ const ProductList = ({ products }) => {
     dispatch(detailProduct(product));
     navigate(`/detail/${product._id}`);
     window.scrollTo(0, 0);
-  }
+  };
+  console.log(products);
 
   return (
     <section className={styled.products}>

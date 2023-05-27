@@ -2,9 +2,10 @@ import { useDispatch } from 'react-redux';
 import { closePopup } from '../../store/producterSlice';
 import styled from './Modal.module.css';
 
-const Modal = (props) => {
+const Modal = ({onOpen}) => {
   const dispatch = useDispatch()
   const closes = () => {
+    onOpen(false);
     dispatch(closePopup());
   }
   return (

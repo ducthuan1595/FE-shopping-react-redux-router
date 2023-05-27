@@ -5,7 +5,6 @@ import styled from './TotalCart.module.css';
 const TotalCart = () => {
   const totalAmount = useSelector(state => state.cart.totalAmount);
   let total = totalAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-
   return (
     <section className={styled.total}>
       <h4>CART TOTAL</h4>
