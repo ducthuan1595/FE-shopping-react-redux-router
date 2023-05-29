@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { Buffer } from "buffer";
 
 import styled from './DetailOrder.module.css';
 
@@ -37,13 +38,14 @@ const DetailOrder = () => {
         <tbody>
           {order && order.items.map(item => {
             const p = item.productId;
+            const base64 = Buffer.from(p.images[0]).toString('base64');
             let price = p?.price?.toString()
             .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
             return (
               <tr key={p._id}>
                 <td>{p.name}</td>
                 <td>{p.category}</td>
-          <td><img style={{height: '100px'}} src={p?.images[0]} alt={p.name} /></td>
+          <td><img style={{height: '100px'}} src={'data:image/jpeg;base64,' + base64} alt={p.name} /></td>
           <td>{price}</td>
           <td>{item.quantity}</td>
               </tr>

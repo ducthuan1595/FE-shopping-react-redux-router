@@ -2,16 +2,14 @@ import { createSlice } from "@reduxjs/toolkit";
 import Cookies from "universal-cookie";
 
 const cookies = new Cookies();
-const userCrr = cookies.get('currUser')
-const isLogin = userCrr !== undefined;
+const userCrr = cookies.get('currUser');
 
 console.log(userCrr);
-console.log(isLogin);
 
 const userSlice = createSlice({
   name: 'auth',
   initialState: {
-    onLogin: isLogin,
+    onLogin: userCrr === undefined ? false : true,
     currUser: userCrr,
   },
   reducers: {
@@ -21,6 +19,7 @@ const userSlice = createSlice({
     },
     logout: (state) => {
       state.onLogin = false;
+      state.currUser = undefined;
     }
   }
 });

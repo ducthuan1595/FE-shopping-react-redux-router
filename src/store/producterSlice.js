@@ -6,7 +6,7 @@ const popupSlice = createSlice({
     showPopup: false,
     product: {},
     products: [],
-    detailProduct: {},
+    detailProduct: null,
   },
   reducers: {
     showPopup: (state) => {

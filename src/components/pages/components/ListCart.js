@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { getCarts } from "../../../store/cartSlice";
 import styled from "./ListCart.module.css";
 import { useEffect, useState } from "react";
+import { Buffer } from "buffer";
 
 import { request } from "../../../services/service";
 
@@ -17,7 +18,7 @@ const ListCart = () => {
   const [message, setMessage] = useState('Not product!');
 
   const fetchCarts = async() => {
-    const data = await request.getCarts(currUser.user.userId);
+    const data = await request.getCarts(currUser?.user.userId);
     if(data.data.message === 'ok') {
       setListCart(data.data.cart);
       dispatch(getCarts(data.data.cart));
@@ -27,9 +28,8 @@ const ListCart = () => {
     fetchCarts();
   }, [currUser]);
 
-  console.log(currUser.user.userId);
   const addCarts = async(productId, quantity) => {
-    const res = await request.addCart(currUser.user.userId, productId, quantity);
+    const res = await request.addCart(currUser?.user.userId, productId, quantity);
     if(res.data.message === 'ok') {
       fetchCarts();
     }
@@ -63,7 +63,7 @@ const ListCart = () => {
 
   // handle remove product
   const handleRemove = async(item) => {
-    const res = await request.deleteCart(currUser.user.userId, item._id);
+    const res = await request.deleteCart(currUser?.user.userId, item._id);
     if(res.data.message === 'ok') {
       fetchCarts();
     }
@@ -86,6 +86,7 @@ const ListCart = () => {
           {listCart.length > 0 ?
             listCart.map((p) => {
               const item = p?.productId;
+              const base64 = Buffer.from(item.images[0]).toString('base64');
               let price = item?.price
                 .toString()
                 .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -95,7 +96,7 @@ const ListCart = () => {
               return (
                 <tr key={item._id} className={styled.inform}>
                   <td>
-                    <img src={item.images[0]} alt={item.name} />
+                    <img src={'data:image/jpeg;base64,' + base64} alt={item.name} />
                   </td>
                   <td style={{ fontWeight: "bold" }}>{item.name}</td>
                   <td>{price} VND</td>

@@ -35,10 +35,10 @@ export default function LoginPage() {
       setInvalid(true);
       setMessageError('Please, this field is require!')
     }
-    // if(name === 'password' && valueInput['password'].trim().length < 7) {
-    //   setInvalid(true);
-    //   setMessageError('Please, password must at least 8 charts!')
-    // }
+    if(name === 'password' && valueInput['password'].trim().length < 7) {
+      setInvalid(true);
+      setMessageError('Please, password must at least 8 charts!')
+    }
     if(name === 'email' && !valueInput['email'].includes('@')) {
       setInvalid(true);
       setMessageError('Please, this field must to be email!')
@@ -53,6 +53,8 @@ export default function LoginPage() {
       const data = await request.login(valueInput);
       if(data.data.message === 'ok') {
         dispatch(login(data.data));
+  console.log(data.headers.get("set-cookie"));
+
         cookies.set('currUser', data.data);
         navigate('/');
       }else {

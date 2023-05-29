@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { Buffer } from "buffer";
 
 import { detailProduct } from "../../../store/producterSlice";
 import styled from "./ProductList.module.css";
@@ -33,6 +34,7 @@ const ProductList = ({ products }) => {
         {products &&
           products.map((p) => {
             // format a price with dot
+            const base64 = Buffer.from(p.images[0]).toString('base64');
             let price = p.price
               .toString()
               .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -42,7 +44,7 @@ const ProductList = ({ products }) => {
                 key={p._id}
                 onClick={handleDetailProduct.bind(null, p)}
               >
-                <img src={p.images[0]} alt={p.name} />
+                <img src={'data:image/jpeg;base64,' + base64} alt={p.name} />
                 <h5>{p.name}</h5>
                 <p>{price} VND</p>
               </div>

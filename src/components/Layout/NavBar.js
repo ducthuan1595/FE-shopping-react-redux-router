@@ -13,8 +13,10 @@ const NavBar = () => {
   const onLogin = useSelector((state) => state.auth.onLogin);
   const dispatch = useDispatch();
   const cookies = new Cookies();
-
+  
+  
   const userCurr = useSelector((state) => state.auth.currUser);
+  console.log(userCurr);
   // remote user curr
   const handleLogout = async () => {
     const data = await request.logout();

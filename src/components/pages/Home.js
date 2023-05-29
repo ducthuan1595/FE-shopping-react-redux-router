@@ -2,8 +2,8 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-
-import { showPopup, getProduct, getAllProduct } from "../../store/producterSlice";
+import { Buffer } from "buffer";
+import { showPopup, getProduct } from "../../store/producterSlice";
 
 import Popup from "../Layout/Popup";
 import styled from "./HomePage.module.css";
@@ -77,11 +77,12 @@ export default function HomePage() {
         </div>
         <div className={styled.items}>
           {products && products?.products?.map(p => {
+            const base64 = Buffer.from(p.images[0]).toString('base64');
             // format a price with dot
             let price = p.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
             return (
               <div className={styled.item} key={p._id} onClick={handleDetailProduct.bind(null, p)}>
-                <img src={p.images[0]} alt={p.name} />
+                <img src={'data:image/jpeg;base64,' + base64} alt={p.name} />
                 <h5>{p.name}</h5>
                 <p>{price} VND</p>
               </div>

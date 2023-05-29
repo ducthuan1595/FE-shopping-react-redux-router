@@ -48,8 +48,8 @@ const HistoryPage = () => {
       <section className={styled.nav}>
         <div className={styled.title}>
         <h2>Your information</h2>
-          <div>Name: {currUser.user.name}</div>
-          <div>Email: {currUser.user.email}</div>
+          <div>Name: {currUser?.user?.name}</div>
+          <div>Email: {currUser?.user?.email}</div>
         </div>
         <div>
           <img style={{width: '200px'}} src='https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png' alt='user' />
