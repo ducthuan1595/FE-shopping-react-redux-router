@@ -12,7 +12,7 @@ const HistoryPage = () => {
 
   const getAllOrder = async(page) => {
     const pages = page || 1;
-    const res = await request.getOrder(currUser?.user.userId, pages);
+    const res = await request.getOrderWithUser(currUser?.userId, pages);
     if(res.data.message === 'ok') {
       console.log(res.data);
       setOrders(res.data.result)
@@ -38,7 +38,7 @@ const HistoryPage = () => {
   }, []);
 
   const handleShowDetail = async(id) => {
-    const res = await request.getDetailOrderByUser(currUser?.user.userId, id);
+    const res = await request.getDetailOrderByUser(currUser?.userId, id);
     if(res.data.message === 'ok') {
       navigate(`/detail-order/${id}`, {state: {data: res.data.order}});
     }
@@ -48,8 +48,8 @@ const HistoryPage = () => {
       <section className={styled.nav}>
         <div className={styled.title}>
         <h2>Your information</h2>
-          <div>Name: {currUser?.user?.name}</div>
-          <div>Email: {currUser?.user?.email}</div>
+          <div>Name: {currUser?.name}</div>
+          <div>Email: {currUser?.email}</div>
         </div>
         <div>
           <img style={{width: '200px'}} src='https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png' alt='user' />

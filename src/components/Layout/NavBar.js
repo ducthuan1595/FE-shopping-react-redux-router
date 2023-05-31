@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 
 import { logout } from "../../store/userSlice";
 import styled from "./NavBar.module.css";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
 // import Cookies from 'js-cookie';
 
@@ -12,17 +12,18 @@ import { request } from "../../services/service";
 const NavBar = () => {
   const onLogin = useSelector((state) => state.auth.onLogin);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const cookies = new Cookies();
   
   
-  const userCurr = useSelector((state) => state.auth.currUser);
-  console.log(userCurr);
   // remote user curr
   const handleLogout = async () => {
     const data = await request.logout();
     if (data.data.message === "ok") {
       dispatch(logout());
-      cookies.set("currUser");
+      cookies.remove('currUser');
+      cookies.remove("access-token");
+      navigate('/login');
     }
   };
 
@@ -67,7 +68,7 @@ const NavBar = () => {
                 to="/history"
               >
                 <i className="fas fa-user"></i>
-                {/* {userCurr?.user?.name} */}
+                {/* {userCurr?.name} */}
               </NavLink>
             </li>
           ) : (

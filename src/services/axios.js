@@ -2,10 +2,15 @@ import axios from 'axios';
 import jwt_decode from 'jwt-decode';
 import { request } from './service';
 import Cookies from 'universal-cookie';
+import store from '../store/store';
+import { getToken } from '../store/userSlice';
+import { getCookie } from '../store/userSlice';
+// import Cookies from 'js-cookie';
 
-const axiosJWT = axios.create();
+export const axiosJWT = axios.create();
 const cookies = new Cookies();
-const user = cookies.get('currUser');
+// const user = cookies.get('currUser');
+// const token = store.getState().auth.accessToken;
 
 const refreshToken = async() => {
   try{
@@ -15,18 +20,20 @@ const refreshToken = async() => {
     console.log(err);
   }
 }
-
-export const axiosPrivate = axiosJWT.interceptors.request.use(
+ 
+axiosJWT.interceptors.request.use(
   async(config) => {
     let date = new Date();
-    const decodeToken = jwt_decode(user?.token);
-    if(decodeToken.exp < date.getTime()/1000) {
+    // console.log(document.cookie);
+    const accessToken = await getCookie();
+    console.log(accessToken);
+    const decodeToken = jwt_decode(accessToken);
+    if(decodeToken.exp * 1000 < date.getTime()) {
       const data = await refreshToken();
-      const refreshUser = {
-        ...user,
-        token: data.token,
-      };
-      cookies.set('currUser', refreshUser);
+      console.log(data.token);
+
+      store.dispatch(getToken(data.token));
+      cookies.set('access-token', data.token);
       config.headers['authorization'] = `Bearer ${data.token}`
     }
     return config;

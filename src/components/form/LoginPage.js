@@ -2,9 +2,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Cookies from 'universal-cookie';
+// import Cookies from "js-cookie";
 
 import { request } from "../../services/service";
-import { login } from "../../store/userSlice";
+import { login, getToken } from "../../store/userSlice";
 import styled from "./LoginPage.module.css";
 import { Link } from "react-router-dom";
 
@@ -52,10 +53,10 @@ export default function LoginPage() {
     if(!isValid) {
       const data = await request.login(valueInput);
       if(data.data.message === 'ok') {
-        dispatch(login(data.data));
-  console.log(data.headers.get("set-cookie"));
-
-        cookies.set('currUser', data.data);
+        dispatch(login(data.data.user));
+        dispatch(getToken(data.data.token));
+        cookies.set('currUser', data.data.user);
+        cookies.set('access-token', data.data.token);
         navigate('/');
       }else {
         setInvalid(true);

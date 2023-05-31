@@ -36,3 +36,14 @@
     transform: rotate(360deg);
   }
 }
+
+.isloading {
+  font-size: 25px;
+  color: #fff;
+  margin: auto;
+  position: absolute;
+  z-index: 11;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%);
+}

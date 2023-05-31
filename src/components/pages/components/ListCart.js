@@ -7,9 +7,12 @@ import { useEffect, useState } from "react";
 import { Buffer } from "buffer";
 
 import { request } from "../../../services/service";
+import { getCookie } from "../../../store/userSlice";
 
 const ListCart = () => {
   const currUser = useSelector((state) => state.auth.currUser);
+  const accessToken = useSelector((state) => state.auth.accessToken);
+  console.log(accessToken);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -18,10 +21,23 @@ const ListCart = () => {
   const [message, setMessage] = useState('Not product!');
 
   const fetchCarts = async() => {
-    const data = await request.getCarts(currUser?.user.userId);
-    if(data.data.message === 'ok') {
-      setListCart(data.data.cart);
-      dispatch(getCarts(data.data.cart));
+    try{
+      if(currUser && currUser !== 'undefined') {
+        const config = {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${getCookie()}`
+          },
+        }
+        const data = await request.getCarts(currUser?.userId, config);
+        if(data.data.message === 'ok') {
+          console.log(data.data);
+          setListCart(data.data.cart);
+          dispatch(getCarts(data.data.cart));
+        }
+      }
+    }catch(er) {
+      console.error(er);
     }
   }
   useEffect(() => {
@@ -29,12 +45,11 @@ const ListCart = () => {
   }, [currUser]);
 
   const addCarts = async(productId, quantity) => {
-    const res = await request.addCart(currUser?.user.userId, productId, quantity);
+    const res = await request.addCart(currUser?.userId, productId, quantity);
     if(res.data.message === 'ok') {
       fetchCarts();
     }
   }
-  console.log(listCart);
   const handleNavigateShop = () => {
     navigate("/shop");
     window.scrollTo(0, 0);
@@ -63,7 +78,7 @@ const ListCart = () => {
 
   // handle remove product
   const handleRemove = async(item) => {
-    const res = await request.deleteCart(currUser?.user.userId, item._id);
+    const res = await request.deleteCart(currUser?.userId, item._id);
     if(res.data.message === 'ok') {
       fetchCarts();
     }

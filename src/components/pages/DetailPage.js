@@ -33,12 +33,11 @@ export default function DetailPage() {
   const text = filter?.splice(0, 1);
 
   // handle add products to cart
-  console.log(userCurr);
   const handleAddCart = async () => {
-    if (quantity > 0 && userCurr ) {
+    if (quantity > 0 && userCurr && userCurr !== 'undefined') {
       if(detailProduct.count > 0) {
         const res = await request.addCart(
-          userCurr?.user?.userId,
+          userCurr?.userId,
           detailProduct._id,
           quantity
         );
@@ -131,10 +130,10 @@ export default function DetailPage() {
                 return (
                   <div key={index}>
                     <img
-                      onClick={handleShowImage.bind(null, 0)}
+                      onClick={handleShowImage.bind(null, index)}
                       src={
                         "data:image/jpeg;base64," +
-                        Buffer.from(detailProduct.images[index]).toString(
+                        Buffer.from(image).toString(
                           "base64"
                         )
                       }
@@ -161,7 +160,7 @@ export default function DetailPage() {
                 <span>{detailProduct.count === 0 ? 0 : quantity}</span>
                 <i className="fas fa-caret-right" onClick={handleIncrease}></i>
               </div>
-              <button disabled={detailProduct?.count > 0 ? true : false} onClick={handleAddCart}>Add to cart</button>
+              <button disabled={detailProduct?.count === 0 ? true : false} onClick={handleAddCart}>Add to cart</button>
             </div>
           </div>
               {detailProduct?.count === 0 && <div style={{color: '#e3530c', marginTop: '10px'}}>Sorry, Product's item out of stock</div>}

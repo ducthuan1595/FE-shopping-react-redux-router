@@ -3,6 +3,8 @@ import { request } from "../../services/service";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
+import Modal from "../Layout/Modal";
+
 const FormCheckout = ({ total }) => {
   const navigate = useNavigate();
   const currUser = useSelector(state => state.auth.currUser);
@@ -22,6 +24,7 @@ const FormCheckout = ({ total }) => {
     address: ''
   });
   const [isValid, setInvalid] = useState(true);
+  const [isLoading, setIsloading] = useState(false);
 
   const handleChangeInput = (e, name) => {
     setInvalid(false);
@@ -57,16 +60,18 @@ const FormCheckout = ({ total }) => {
   const handleSubmit = async(e) => {
     e.preventDefault();
     if(!isValid) {
+      setIsloading(true);
       const value = {
         address: valueInput.address,
         phone: valueInput.phone,
         name: valueInput.name,
         email: valueInput.email,
-        userId: currUser?.user.userId,
+        userId: currUser?.userId,
         amount: amount,
       }
       const res = await request.postOrder(value);
       if(res.data.message === 'ok') {
+        setIsloading(false);
         navigate('/');
         window.scrollTo(0,0);
       }else {
@@ -78,6 +83,7 @@ const FormCheckout = ({ total }) => {
   }
   return (
     <div>
+      {/* {isLoading && <><Modal /><div className='isloading'>Ordering is in progress...</div></>} */}
       <form className='row' onSubmit={handleSubmit}>
             <div className="col-12">
               <label htmlFor='name' className="form-label">

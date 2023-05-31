@@ -1,5 +1,6 @@
 import axios from "axios";
-import { axiosPrivate } from "./axios";
+import { axiosJWT } from "./axios";
+import { getCookie } from "../store/userSlice";
 
 export const url = "http://localhost:5050/api";
 
@@ -27,6 +28,7 @@ export const request = {
   refreshToken: () => {
     return axios.get(`${url}/refresh-token`, {
       withCredentials: true,
+      // credentials: "include",
     });
   },
 
@@ -34,28 +36,50 @@ export const request = {
     return axios.get(`${url}/get-all-product`);
   },
 
-  getCarts: (userId) => {
-    return axios.get(`${url}/get-cart/${userId}`);
+  getCarts: (userId, config) => {
+    return axiosJWT.get(`${url}/get-cart/${userId}`, config);
   },
   addCart: (userId, productId, quantity) => {
-    return axios.post(`${url}/add-cart`, { userId, productId, quantity });
+    return axiosJWT.post(`${url}/add-cart`, { userId, productId, quantity }, {
+      headers: {
+        'Authorization': `Bearer ${getCookie()}`
+      }
+    });
   },
   deleteCart: (userId, productId) => {
-    return axios.delete(`${url}/delete-cart/${productId}?userId=${userId}`);
+    return axiosJWT.delete(`${url}/delete-cart/${productId}?userId=${userId}`, {
+      withCredentials: true,
+      headers: {
+        'Authorization': `Bearer ${getCookie()}`
+      }
+    });
   },
   getDetailProduct: (productId) => {
     return axios.get(`${url}/get-edit-product/${productId}`);
   },
 
   postOrder: (value) => {
-    return axios.post(`${url}/post-order`, { ...value });
+    return axiosJWT.post(`${url}/post-order`, { ...value }, {
+      headers: {
+        'Authorization': `Bearer ${getCookie()}`
+      }
+    });
   },
-  getOrder: (userId, page) => {
-    return axios.get(`${url}/get-order/${userId}?page=${page}`);
+  getOrderWithUser: (userId, page) => {
+    return axiosJWT.get(`${url}/get-order/${userId}?page=${page}`, {
+      headers: {
+        'Authorization': `Bearer ${getCookie()}`
+      }
+    });
   },
   getDetailOrderByUser: (userId, orderId) => {
-    return axios.get(
-      `${url}/get-detail-order-by-user/${orderId}?userId=${userId}`
+    return axiosJWT.get(
+      `${url}/get-detail-order-by-user/${orderId}?userId=${userId}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${getCookie()}`
+        }
+      }
     );
   },
 };
